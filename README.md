@@ -1,5 +1,7 @@
 # EmbelJS - Embedded Elements Javascript
 
+![EmbelJS logo](./docs/logo.png)
+
 A simple, easy to learn framework for creating HTML elements
 
 ```js

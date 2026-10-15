@@ -1,14 +1,14 @@
 /**
- * An array with all possible values you can insert into builtin Embel components.
- * It is designed to be flexible, so you can work however you like
+ * Matches possible values you can insert into builtin Embel components.
+ * The argument system is designed to be flexible, so you can work however you like (even putting the children before the attributes)
  * @template {HTMLElement} T
- * @typedef {(null|string|number|HTMLElement|(parent: T) => void|{[field: string]: string|function})[]} eComponentArgs_T
+ * @typedef {(null|string|number|HTMLElement|(parent: T) => void|{[field: string]: string|function})} eComponentArg_T
  */
 
 /**
- * The standard definition of builtin Embel components
+ * The standard definition of builtin Embel HTML tags
  * @template {HTMLElement} T
- * @typedef {(...args: eComponentArgs_T<T>) => T} eComponentDef_T
+ * @typedef {(...args: eComponentArg_T<T>[]) => T} eComponentDef_T
  */
 
 /**
@@ -23,7 +23,7 @@ let internal_activeParent = document.body;
  * @ignore
  * @template {HTMLElement} T
  * @param {string} kind What html tag to use for the element
- * @param {eComponentArgs_T<T>} args The attributes, children, etc. of the new element
+ * @param {eComponentArg_T<T>[]} args The attributes, children, etc. of the new element
  * @returns {T} The new element
  * @throws {TypeError} if the type of kind isn't a string (so you're trying to create an tag false or 1)
  * @throws {TypeError} if an argument isn't of a supported type/format
@@ -336,7 +336,7 @@ export function eText(txt) {
 /**
  * Creates a component with a tag based on the name param
  * @param {string} kind The webcomponent to create
- * @param  {eComponentArgs_T} args The attributes, body, etc. of this new webcomponent
+ * @param  {eComponentArg_T[]} args The attributes, body, etc. of this new webcomponent
  * @returns {HTMLElement} The created webcomponent
  * @throws {TypeError} if you're trying to create a webcomponent with a kind other than string, such as a number, boolean, etc.
  */

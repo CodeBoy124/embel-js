@@ -30,3 +30,7 @@ You might have noticed there are ESM and UMD versions of the library. For those 
 ## Reference
 
 For the more advanced users, that have already read the get started, you can find the reference [here](./docs/reference.md)
+
+## Contributers
+
+Feel free to send a pull request. Please don't forget to update jsdoc comments and reference/documentation.

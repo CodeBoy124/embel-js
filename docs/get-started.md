@@ -129,7 +129,7 @@ P("Clicked 0x");
 Button({ click: decrease }, "-");
 ```
 
-This code allows us to press the button's and it changes the variable, but the UI isn't updated. For that we need **references**. There are many ways to go about this, but every element returns itself, so let's use that for now.
+This code allows us to press the button's and it changes the variable, but the UI isn't updated. For that we need **references**. There are multiple ways to go about this. You can see two in the following code:
 
 ```js
 const { P, Button } = e;
@@ -149,6 +149,8 @@ function decrease() {
 
 Button({ click: increase }, "+");
 p_reference = P("Clicked 0x");
+// Alternative reference method is using a scoped function:
+// P((this_element) => {p_reference = this_element}, "Clicked 0x")
 Button({ click: decrease }, "-");
 ```
 

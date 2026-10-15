@@ -20,7 +20,7 @@ The argument system is designed to be flexible, so you can work however you like
 - `null` that can be ignored
 - `string` for text content to add
 - `number` for text content to add
-- `HTMLElement` for appending it to the component
+- `HTMLElement` for appending it to the component (⚠️ WARNING: If you use builtin EmbelJS tag functions, you shouldn't add them as a seperate argument, but instead inside a scoped function like bellow)
 - `(parent: T) => void` A scoped function to generate child elements
 - `{[field: string]: string|function}` An object containing attributes (so a `string` value) and/or event listeners (so a `function` value)
 

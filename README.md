@@ -1,5 +1,8 @@
 # EmbelJS - Embedded Elements Javascript
 
+[![Crafted by Human](./docs/crafted-white.svg)](https://madebyhuman.iamjarl.com)
+![v0.0.0](https://img.shields.io/badge/v0.0.0-orange)
+
 ![EmbelJS logo](./docs/logo.png)
 
 A simple, easy to learn framework for creating HTML elements
@@ -31,6 +34,12 @@ You might have noticed there are ESM and UMD versions of the library. For those 
 
 For the more advanced users, that have already read the get started, you can find the reference [here](./docs/reference.md)
 
-## Contributers
+<!-- ## Crafted by humans -->
 
-Feel free to send a pull request. Please don't forget to update jsdoc comments and reference/documentation.
+<!-- [![Crafted by Human](https://madebyhuman.iamjarl.com/badges/crafted-white.svg)](https://madebyhuman.iamjarl.com) -->
+
+## Crafted by Human
+
+[![Crafted by Human](https://madebyhuman.iamjarl.com/badges/crafted-white.svg)](https://madebyhuman.iamjarl.com)
+
+So far, this project has been entirely made by hand, without AI involvement.

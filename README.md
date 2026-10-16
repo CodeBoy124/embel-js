@@ -34,10 +34,6 @@ You might have noticed there are ESM and UMD versions of the library. For those 
 
 For the more advanced users, that have already read the get started, you can find the reference [here](./docs/reference.md)
 
-<!-- ## Crafted by humans -->
-
-<!-- [![Crafted by Human](https://madebyhuman.iamjarl.com/badges/crafted-white.svg)](https://madebyhuman.iamjarl.com) -->
-
 ## Crafted by Human
 
 [![Crafted by Human](https://madebyhuman.iamjarl.com/badges/crafted-white.svg)](https://madebyhuman.iamjarl.com)

@@ -5,9 +5,10 @@
 3. [[function] eParentTo(new_parent, body) => `void`](#function-eparenttonew_parent-body--void)
 4. [[function] eText(txt) => `Text`](#function-etexttxt--text)
 5. [[function] eWebcomponent(kind, ...args) => `HTMLElement`](#function-ewebcomponent--htmlelement)
-6. [[function] ePrepare(body) => `DocumentFragment`](#function-epreparebody--documentfragment)
-7. [[function] eFragment(body) => `void`](#function-efragmentbody--void)
-8. [[constant] e](#constant-e)
+6. [[function] eCss(styles) => `(element: HTMLElement) => void`](#function-ecssstyles--element-htmlelement--void)
+7. [[function] ePrepare(body) => `DocumentFragment`](#function-epreparebody--documentfragment)
+8. [[function] eFragment(body) => `void`](#function-efragmentbody--void)
+9. [[constant] e](#constant-e)
 
 ## [type] eComponentArg_T
 
@@ -86,6 +87,17 @@ Creates a component with a tag based on the name param
 | ---------- | --------------------- | ---------------------------- |
 | kind | `string` | The webcomponent to create |
 | args | `eComponentArg_T[]` | The attributes, body, etc. of this new webcomponent |
+
+## [function] eCss(styles) => `(element: HTMLElement) => void`
+
+This function assigns CSS values to an element
+
+**Returns**: `(element: HTMLElement) => void` A function that can be put inside eComponentArg_T
+
+**Throws**
+
+- `TypeError` If the styles argument is not an object
+- `TypeError` If the returned function doesn't receive a HTMLElement instance
 
 ## [function] ePrepare(body) => `DocumentFragment`
 

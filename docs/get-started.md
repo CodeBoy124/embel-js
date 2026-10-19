@@ -216,3 +216,7 @@ function App() {
 
 App();
 ```
+
+## 9 - End of get-started
+
+You've now reached the end of the get-started guide. There are more features you can use, but there are too many for one guide. See the [reference](./reference.md) for more.

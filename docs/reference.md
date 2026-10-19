@@ -99,6 +99,10 @@ This function assigns CSS values to an element
 - `TypeError` If the styles argument is not an object
 - `TypeError` If the returned function doesn't receive a HTMLElement instance
 
+| Name   | Type                  | Description                                                                |
+| ------ | --------------------- | -------------------------------------------------------------------------- |
+| styles | `CSSStyleDeclaration` | The styles to use (you can also use null or an array for a property value) |
+
 ## [function] ePrepare(body) => `DocumentFragment`
 
 A function for only generating the elements, not appending them to a parent

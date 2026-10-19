@@ -1,7 +1,7 @@
 # EmbelJS - Embedded Elements Javascript
 
 [![Crafted by Human](./docs/crafted-white.svg)](https://madebyhuman.iamjarl.com)
-![v0.0.0](https://img.shields.io/badge/v0.0.0-orange)
+![v0.0.0](https://img.shields.io/badge/v0.1.0-orange)
 
 ![EmbelJS logo](./docs/logo.png)
 

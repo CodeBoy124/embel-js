@@ -74,6 +74,13 @@ function internal_componentGeneric(kind, ...args) {
  * @param {(parent: T) => void} body The content it has inside it
  * @throws {TypeError} if the new_parent isn't an HTMLElement instance
  * @throws {TypeError} if the body isn't a valid function
+ *
+ * @example
+ * let todo_list_container = null;
+ * // ... some code where todo_list_container gets assigned to an element
+ * function addTodoItem(title) {
+ *  eParentTo(todo_list_container, () => TodoItem(title));
+ * }
  */
 export function eParentTo(new_parent, body = () => {}) {
   if (!(new_parent instanceof HTMLElement))
@@ -326,6 +333,15 @@ export const e = {
  * Creates a text node
  * @param {string} txt The text to put inside it
  * @returns {Text} The created node
+ *
+ * @example
+ * let count_node = null;
+ * const click_handler = () => {
+ *  count_node.textContent = "clicked"
+ * }
+ * e.Button({click: click_handler}, () => {
+ *  count_node = eText("not clicked");
+ * })
  */
 export function eText(txt) {
   let new_node = document.createTextNode(txt);
@@ -339,6 +355,11 @@ export function eText(txt) {
  * @param  {eComponentArg_T[]} args The attributes, body, etc. of this new webcomponent
  * @returns {HTMLElement} The created webcomponent
  * @throws {TypeError} if you're trying to create a webcomponent with a kind other than string, such as a number, boolean, etc.
+ *
+ * @example
+ * e.Main(() => {
+ *  eWebcomponent("x-custom-tag", {click: () => alert("Hello")});
+ * })
  */
 export function eWebcomponent(kind, ...args) {
   if (typeof kind != "string")
@@ -347,4 +368,85 @@ export function eWebcomponent(kind, ...args) {
       { cause: kind },
     );
   return internal_componentGeneric(kind, ...args);
+}
+
+/**
+ * A function that transforms js values into a string that can be used by css
+ * @param {any} value The value to transform into a css string
+ * @returns {string} The generated value
+ */
+function internal_cssValue(value) {
+  if (!Array.isArray(value)) return value;
+  return value
+    .map(internal_cssValue)
+    .filter((v) => v != null)
+    .join(" ");
+}
+
+/**
+ * This function assigns CSS values to an element
+ * @param {CSSStyleDeclaration} styles The styles to use (you can also use null or an array for a property value)
+ * @returns {(element: HTMLElement) => void} A function that can be put inside eComponentArg_T
+ * @throws {TypeError} If the styles argument is not an object
+ * @throws {TypeError} If the returned function doesn't receive a HTMLElement instance
+ *
+ * @example
+ * const yellow_bullet_styles = eCss({
+ *  backgroundColor: "yellow",
+ *  width: "100px",
+ *  height: "50px",
+ *  borderRadius: ["0", "10px", "10px", "0"],
+ *  border: null
+ * });
+ * e.Div(yellow_bullet_styles)
+ */
+export function eCss(styles) {
+  if (typeof styles != "object" || Array.isArray) {
+    throw new TypeError(
+      "Stylesheet must be an object. Not any other type or an array",
+      { cause: styles },
+    );
+  }
+  return (element) => {
+    if ((!element) instanceof HTMLElement) {
+      throw new TypeError("Element isn't a HTMLElement instance", {
+        cause: element,
+      });
+    }
+    for (let styleKey in styles) {
+      if (styles[styleKey] == null) continue;
+      element.style[styleKey] = internal_cssValue(styles[styleKey]);
+    }
+  };
+}
+
+/**
+ * A function for only generating the elements, not appending them to a parent
+ * @param {(parent: DocumentFragment) => void} body The function for generating the child(ren)
+ * @returns {DocumentFragment} A fragment containing the child(ren)
+ * @throws {TypeError} if the body isn't a function
+ *
+ * @example
+ * some_parent.replaceChild(some_child, ePrepare(() => e.H1("New child")))
+ */
+export function ePrepare(body) {
+  if (typeof body != "function")
+    throw new TypeError("Fragment body isn't a function");
+  const frag = document.createDocumentFragment();
+  const old_parent = internal_activeParent;
+  internal_activeParent = frag;
+  body(internal_activeParent);
+  internal_activeParent = old_parent;
+  return frag;
+}
+
+/**
+ * A function that creates a fragment and appends it to the parent. So far I don't know any reason this would be used, but if there is a usecase, it's here
+ * @param {(parent: DocumentFragment) => void} body The function for generating the children
+ * @returns {void}
+ * @throws {TypeError} if the body isn't a function
+ */
+export function eFragment(body) {
+  const frag = ePrepare(body);
+  internal_activeParent.appendChild(frag);
 }

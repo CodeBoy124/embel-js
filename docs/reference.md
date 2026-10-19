@@ -4,7 +4,11 @@
 2. [[type] eComponentDef_T](#type-ecomponentdef_t)
 3. [[function] eParentTo(new_parent, body) => `void`](#function-eparenttonew_parent-body--void)
 4. [[function] eText(txt) => `Text`](#function-etexttxt--text)
-5. [[function] eWebcomponent(kind, ...args) => `HTMLElement`](#function-ewebcomponentkind-args--htmlelement)
+5. [[function] eWebcomponent(kind, ...args) => `HTMLElement`](#function-ewebcomponent--htmlelement)
+6. [[function] eCss(styles) => `(element: HTMLElement) => void`](#function-ecssstyles--element-htmlelement--void)
+7. [[function] ePrepare(body) => `DocumentFragment`](#function-epreparebody--documentfragment)
+8. [[function] eFragment(body) => `void`](#function-efragmentbody--void)
+9. [[constant] e](#constant-e)
 
 ## [type] eComponentArg_T
 
@@ -57,7 +61,17 @@ Change the parent (where things a parented to) to something else temporarely
 | new_parent | `T` | The new temporary parent |
 | body | `(parent: T) => void` | The content it has inside it |
 
-## [function] eText(txt)
+**Example**
+
+```js
+let todo_list_container = null;
+// ... some code where todo_list_container gets assigned to an element
+function addTodoItem(title) {
+  eParentTo(todo_list_container, () => TodoItem(title));
+}
+```
+
+## [function] eText(txt) => `Text`
 
 Creates a text node
 
@@ -68,7 +82,19 @@ Creates a text node
 | ---------- | --------------------- | ---------------------------- |
 | txt | `string` | The text to put inside it |
 
-## [function] eWebComponent
+**Example**
+
+```js
+let count_node = null;
+const click_handler = () => {
+  count_node.textContent = "clicked";
+};
+e.Button({ click: click_handler }, () => {
+  count_node = eText("not clicked");
+});
+```
+
+## [function] eWebComponent() => `HTMLElement`
 
 Creates a component with a tag based on the name param
 
@@ -83,6 +109,81 @@ Creates a component with a tag based on the name param
 | ---------- | --------------------- | ---------------------------- |
 | kind | `string` | The webcomponent to create |
 | args | `eComponentArg_T[]` | The attributes, body, etc. of this new webcomponent |
+
+**Example**
+
+```js
+e.Main(() => {
+  eWebcomponent("x-custom-tag", { click: () => alert("Hello") });
+});
+```
+
+## [function] eCss(styles) => `(element: HTMLElement) => void`
+
+This function assigns CSS values to an element
+
+**Returns**: `(element: HTMLElement) => void` A function that can be put inside eComponentArg_T
+
+**Throws**
+
+- `TypeError` If the styles argument is not an object
+- `TypeError` If the returned function doesn't receive a HTMLElement instance
+
+| Name   | Type                  | Description                                                                |
+| ------ | --------------------- | -------------------------------------------------------------------------- |
+| styles | `CSSStyleDeclaration` | The styles to use (you can also use null or an array for a property value) |
+
+**Example**
+
+```js
+const yellow_bullet_styles = eCss({
+  backgroundColor: "yellow",
+  width: "100px",
+  height: "50px",
+  borderRadius: ["0", "10px", "10px", "0"],
+  border: null,
+});
+e.Div(yellow_bullet_styles);
+```
+
+## [function] ePrepare(body) => `DocumentFragment`
+
+A function for only generating the elements, not appending them to a parent
+
+**Returns**: `DocumentFragment` A fragment containing the child(ren)
+
+**Throws**
+
+- `TypeError` if the body isn't a function
+
+**Parameters**
+| Name | Type | Description |
+| ---------- | --------------------- | ---------------------------- |
+| body | `(parent: DocumentFragment) => void` | The function for generating the child(ren) |
+
+**Example**
+
+```js
+some_parent.replaceChild(
+  some_child,
+  ePrepare(() => e.H1("New child")),
+);
+```
+
+## [function] eFragment(body) => `void`
+
+A function that creates a fragment and appends it to the parent. So far I don't know any reason this would be used, but if there is a usecase, it's here
+
+**Returns**: `void`
+
+**Throws**
+
+- `TypeError` if the body isn't a function
+
+**Parameters**
+| Name | Type | Description |
+| ---------- | --------------------- | ---------------------------- |
+| body | `(parent: DocumentFragment) => void` | The function for generating the children |
 
 ## [constant] e
 

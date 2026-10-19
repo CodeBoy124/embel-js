@@ -1,4 +1,4 @@
-import { e, embelParentTo } from "../../../embel.esm.js";
+import { e, eParentTo } from "../../../embel.esm.js";
 
 const { Div, Input, Span, A, Button } = e;
 
@@ -26,7 +26,8 @@ function TodoList() {
   /** @type {HTMLDivElement} */ let listContainer = null;
 
   const addItem = () => {
-    embelParentTo(listContainer, () => TodoItem(inputElement.value));
+    eParentTo(listContainer, () => TodoItem(inputElement.value));
+    // or `listContainer.appendChild(ePrepare(() => TodoItem(inputElement.value)));`
     inputElement.value = "";
   };
 

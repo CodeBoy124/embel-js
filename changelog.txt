@@ -1,0 +1,5 @@
+v0.1.0
++ eCss function
++ ePrepare function
++ eFragment function
++ examples in docs

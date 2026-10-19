@@ -61,6 +61,16 @@ Change the parent (where things a parented to) to something else temporarely
 | new_parent | `T` | The new temporary parent |
 | body | `(parent: T) => void` | The content it has inside it |
 
+**Example**
+
+```js
+let todo_list_container = null;
+// ... some code where todo_list_container gets assigned to an element
+function addTodoItem(title) {
+  eParentTo(todo_list_container, () => TodoItem(title));
+}
+```
+
 ## [function] eText(txt) => `Text`
 
 Creates a text node
@@ -71,6 +81,18 @@ Creates a text node
 | Name | Type | Description |
 | ---------- | --------------------- | ---------------------------- |
 | txt | `string` | The text to put inside it |
+
+**Example**
+
+```js
+let count_node = null;
+const click_handler = () => {
+  count_node.textContent = "clicked";
+};
+e.Button({ click: click_handler }, () => {
+  count_node = eText("not clicked");
+});
+```
 
 ## [function] eWebComponent() => `HTMLElement`
 
@@ -88,6 +110,14 @@ Creates a component with a tag based on the name param
 | kind | `string` | The webcomponent to create |
 | args | `eComponentArg_T[]` | The attributes, body, etc. of this new webcomponent |
 
+**Example**
+
+```js
+e.Main(() => {
+  eWebcomponent("x-custom-tag", { click: () => alert("Hello") });
+});
+```
+
 ## [function] eCss(styles) => `(element: HTMLElement) => void`
 
 This function assigns CSS values to an element
@@ -103,6 +133,19 @@ This function assigns CSS values to an element
 | ------ | --------------------- | -------------------------------------------------------------------------- |
 | styles | `CSSStyleDeclaration` | The styles to use (you can also use null or an array for a property value) |
 
+**Example**
+
+```js
+const yellow_bullet_styles = eCss({
+  backgroundColor: "yellow",
+  width: "100px",
+  height: "50px",
+  borderRadius: ["0", "10px", "10px", "0"],
+  border: null,
+});
+e.Div(yellow_bullet_styles);
+```
+
 ## [function] ePrepare(body) => `DocumentFragment`
 
 A function for only generating the elements, not appending them to a parent
@@ -117,6 +160,15 @@ A function for only generating the elements, not appending them to a parent
 | Name | Type | Description |
 | ---------- | --------------------- | ---------------------------- |
 | body | `(parent: DocumentFragment) => void` | The function for generating the child(ren) |
+
+**Example**
+
+```js
+some_parent.replaceChild(
+  some_child,
+  ePrepare(() => e.H1("New child")),
+);
+```
 
 ## [function] eFragment(body) => `void`
 

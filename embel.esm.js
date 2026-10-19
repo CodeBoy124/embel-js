@@ -348,3 +348,34 @@ export function eWebcomponent(kind, ...args) {
     );
   return internal_componentGeneric(kind, ...args);
 }
+
+/**
+ * A function for only generating the elements, not appending them to a parent
+ * @param {(parent: DocumentFragment) => void} body The function for generating the child(ren)
+ * @returns {DocumentFragment} A fragment containing the child(ren)
+ * @throws {TypeError} if the body isn't a function
+ *
+ * @example
+ * some_parent.replaceChild(some_child, ePrepare(() => e.H1("New child")))
+ */
+export function ePrepare(body) {
+  if (typeof body != "function")
+    throw new TypeError("Fragment body isn't a function");
+  const frag = document.createDocumentFragment();
+  const old_parent = internal_activeParent;
+  internal_activeParent = frag;
+  body(internal_activeParent);
+  internal_activeParent = old_parent;
+  return frag;
+}
+
+/**
+ * A function that creates a fragment and appends it to the parent. So far I don't know any reason this would be used, but if there is a usecase, it's here
+ * @param {(parent: DocumentFragment) => void} body The function for generating the children
+ * @returns {void}
+ * @throws {TypeError} if the body isn't a function
+ */
+export function eFragment(body) {
+  const frag = ePrepare(body);
+  internal_activeParent.appendChild(frag);
+}

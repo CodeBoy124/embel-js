@@ -4,7 +4,10 @@
 2. [[type] eComponentDef_T](#type-ecomponentdef_t)
 3. [[function] eParentTo(new_parent, body) => `void`](#function-eparenttonew_parent-body--void)
 4. [[function] eText(txt) => `Text`](#function-etexttxt--text)
-5. [[function] eWebcomponent(kind, ...args) => `HTMLElement`](#function-ewebcomponentkind-args--htmlelement)
+5. [[function] eWebcomponent(kind, ...args) => `HTMLElement`](#function-ewebcomponent--htmlelement)
+6. [[function] ePrepare(body) => `DocumentFragment`](#function-epreparebody--documentfragment)
+7. [[function] eFragment(body) => `void`](#function-efragmentbody--void)
+8. [[constant] e](#constant-e)
 
 ## [type] eComponentArg_T
 
@@ -57,7 +60,7 @@ Change the parent (where things a parented to) to something else temporarely
 | new_parent | `T` | The new temporary parent |
 | body | `(parent: T) => void` | The content it has inside it |
 
-## [function] eText(txt)
+## [function] eText(txt) => `Text`
 
 Creates a text node
 
@@ -68,7 +71,7 @@ Creates a text node
 | ---------- | --------------------- | ---------------------------- |
 | txt | `string` | The text to put inside it |
 
-## [function] eWebComponent
+## [function] eWebComponent() => `HTMLElement`
 
 Creates a component with a tag based on the name param
 
@@ -83,6 +86,36 @@ Creates a component with a tag based on the name param
 | ---------- | --------------------- | ---------------------------- |
 | kind | `string` | The webcomponent to create |
 | args | `eComponentArg_T[]` | The attributes, body, etc. of this new webcomponent |
+
+## [function] ePrepare(body) => `DocumentFragment`
+
+A function for only generating the elements, not appending them to a parent
+
+**Returns**: `DocumentFragment` A fragment containing the child(ren)
+
+**Throws**
+
+- `TypeError` if the body isn't a function
+
+**Parameters**
+| Name | Type | Description |
+| ---------- | --------------------- | ---------------------------- |
+| body | `(parent: DocumentFragment) => void` | The function for generating the child(ren) |
+
+## [function] eFragment(body) => `void`
+
+A function that creates a fragment and appends it to the parent. So far I don't know any reason this would be used, but if there is a usecase, it's here
+
+**Returns**: `void`
+
+**Throws**
+
+- `TypeError` if the body isn't a function
+
+**Parameters**
+| Name | Type | Description |
+| ---------- | --------------------- | ---------------------------- |
+| body | `(parent: DocumentFragment) => void` | The function for generating the children |
 
 ## [constant] e
 

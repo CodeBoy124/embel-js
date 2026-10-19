@@ -1,4 +1,4 @@
-const { eParentTo, e, eText, eWebcomponent } = (() => {
+const { eParentTo, e, eText, eWebcomponent, ePrepare, eFragment } = (() => {
   /**
    * Matches possible values you can insert into builtin Embel components.
    * The argument system is designed to be flexible, so you can work however you like (even putting the children before the attributes)
@@ -354,5 +354,38 @@ const { eParentTo, e, eText, eWebcomponent } = (() => {
       );
     return internal_componentGeneric(kind, ...args);
   }
-  return { eParentTo, e, eText, eWebcomponent };
+
+  /**
+   * A function for only generating the elements, not appending them to a parent
+   * @param {(parent: DocumentFragment) => void} body The function for generating the child(ren)
+   * @returns {DocumentFragment} A fragment containing the child(ren)
+   * @throws {TypeError} if the body isn't a function
+   *
+   * @example
+   * some_parent.replaceChild(some_child, ePrepare(() => e.H1("New child")))
+   */
+  function ePrepare(body) {
+    if (typeof body != "function")
+      throw new TypeError("Fragment body isn't a function");
+    const frag = document.createDocumentFragment();
+    const old_parent = internal_activeParent;
+    internal_activeParent = frag;
+    body(internal_activeParent);
+    internal_activeParent = old_parent;
+    return frag;
+  }
+
+  /**
+   * A function that creates a fragment and appends it to the parent. So far I don't know any reason this would be used, but if there is a usecase, it's here
+   * @param {(parent: DocumentFragment) => void} body The function for generating the children
+   * @returns {DocumentFragment} A fragment containing the children
+   * @throws {TypeError} if the body isn't a function
+   */
+  function eFragment(body) {
+    const frag = ePrepare(body);
+    internal_activeParent.appendChild(frag);
+    return frag;
+  }
+
+  return { eParentTo, e, eText, eWebcomponent, ePrepare, eFragment };
 })();

@@ -1,8 +1,11 @@
-import { e } from "../embel.esm.js";
+import { e, eCss } from "../embel.esm.js";
 
 const { Span, Details, Summary, Ul, Li, H2 } = e;
 
-function TestValidation(input, processor, onFail) {
+const OK_COLOR = "#060";
+const FAIL_COLOR = "#600";
+
+function TestValidation(input, processor, onResult) {
   let { didFail, description } = {
     didFail: true,
     description: "Could not execute test due to a fail",
@@ -16,14 +19,17 @@ function TestValidation(input, processor, onFail) {
     description = e.message;
   }
 
-  if (didFail) {
-    onFail();
-    Li(() =>
-      Span(
-        `FAIL (${Array.isArray ? input.map((v) => JSON.stringify(v)).join(", ") : JSON.stringify(v)}): ${description}`,
-      ),
-    );
-  }
+  const styles = eCss({
+    color: didFail ? FAIL_COLOR : OK_COLOR,
+  });
+
+  onResult(didFail);
+  Li(() =>
+    Span(
+      styles,
+      `${didFail ? "FAIL" : "SUCCESS"}: (${Array.isArray ? input.map((v) => JSON.stringify(v)).join(", ") : JSON.stringify(v)}): ${description}`,
+    ),
+  );
 }
 
 /**
@@ -33,15 +39,24 @@ function TestValidation(input, processor, onFail) {
  * @param {(...data: T) => {didFail: boolean, description: string}} processor
  */
 export function TestCase(case_name, inputs, processor) {
-  const onFail = (ref) => {
-    ref.style.color = "red";
+  let ok_counter = 0;
+  let total_counter = 0;
+
+  const onResult = (ref, didFail) => {
+    total_counter++;
+    if (!didFail) {
+      ok_counter++;
+    }
+
+    ref.style.color = ok_counter == total_counter ? OK_COLOR : FAIL_COLOR;
+    ref.innerText = `${case_name} (${ok_counter}/${total_counter})`;
   };
 
   Details(() => {
     const case_ref = Summary(case_name);
     Ul(() => {
       for (let input of inputs) {
-        TestValidation(input, processor, () => onFail(case_ref));
+        TestValidation(input, processor, (r) => onResult(case_ref, r));
       }
     });
   });

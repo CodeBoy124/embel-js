@@ -1,27 +1,27 @@
 /**
  * Matches possible values you can insert into builtin Embel components.
  * The argument system is designed to be flexible, so you can work however you like (even putting the children before the attributes)
- * @template {HTMLElement} T
- * @typedef {(null|string|number|HTMLElement|(parent: T) => void|{[field: string]: string|function})} eComponentArg_T
+ * @template {Node} T
+ * @typedef {(null|string|number|Node|(parent: T) => void|{[field: string]: string|function})} eComponentArg_T
  */
 
 /**
  * The standard definition of builtin Embel HTML tags
- * @template {HTMLElement} T
+ * @template {Node} T
  * @typedef {(...args: eComponentArg_T<T>[]) => T} eComponentDef_T
  */
 
 /**
  * The parent that is currently used to parent new elements to
  * @ignore
- * @type {HTMLElement}
+ * @type {Node}
  */
 let internal_activeParent = document.body;
 
 /**
  * The internal function responsible for creating all elements (so also parsing arguments and parenting to a parent)
  * @ignore
- * @template {HTMLElement} T
+ * @template {Node} T
  * @param {string} kind What html tag to use for the element
  * @param {eComponentArg_T<T>[]} args The attributes, children, etc. of the new element
  * @returns {T} The new element
@@ -41,7 +41,7 @@ function internal_componentGeneric(kind, ...args) {
   for (let arg of args) {
     if (typeof arg == "string" || typeof arg == "number") {
       new_element.appendChild(eText(arg));
-    } else if (arg instanceof HTMLElement || arg instanceof Node) {
+    } else if (arg instanceof Node || arg instanceof Node) {
       new_element.appendChild(arg);
     } else if (typeof arg == "function") {
       const old_parent = internal_activeParent;
@@ -69,10 +69,10 @@ function internal_componentGeneric(kind, ...args) {
 
 /**
  * Change the parent (where things a parented to) to something else temporarely
- * @template {HTMLElement} T
+ * @template {Node} T
  * @param {T} new_parent The new temporary parent
  * @param {(parent: T) => void} body The content it has inside it
- * @throws {TypeError} if the new_parent isn't an HTMLElement instance
+ * @throws {TypeError} if the new_parent isn't an Node instance
  * @throws {TypeError} if the body isn't a valid function
  *
  * @example
@@ -83,9 +83,9 @@ function internal_componentGeneric(kind, ...args) {
  * }
  */
 export function eParentTo(new_parent, body = () => {}) {
-  if (!(new_parent instanceof HTMLElement))
+  if (!(new_parent instanceof Node))
     throw new TypeError(
-      "Cannot parent to a parent of any type apart from HTMLElement",
+      "Cannot parent to a parent of any type apart from Node",
       { cause: new_parent },
     );
   if (typeof body != "function")

@@ -401,7 +401,7 @@ function internal_cssValue(value) {
  * e.Div(yellow_bullet_styles)
  */
 export function eCss(styles) {
-  if (typeof styles != "object" || Array.isArray) {
+  if (typeof styles != "object" || Array.isArray(styles)) {
     throw new TypeError(
       "Stylesheet must be an object. Not any other type or an array",
       { cause: styles },

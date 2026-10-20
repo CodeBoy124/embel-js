@@ -27,7 +27,9 @@ function TestValidation(input, processor, onResult) {
   Li(() =>
     Span(
       styles,
-      `${didFail ? "FAIL" : "SUCCESS"}: (${Array.isArray ? input.map((v) => JSON.stringify(v)).join(", ") : JSON.stringify(v)}): ${description}`,
+      didFail
+        ? `FAIL: (${Array.isArray ? input.map((v) => JSON.stringify(v)).join(", ") : JSON.stringify(v)}): ${description}`
+        : `SUCCESS: (${Array.isArray ? input.map((v) => JSON.stringify(v)).join(", ") : JSON.stringify(v)})`,
     ),
   );
 }

@@ -1,4 +1,4 @@
-import { eParentTo, e, eText } from "../embel.esm.js";
+import { eParentTo, e, eText, ePrepare } from "../embel.esm.js";
 import { TestCase, TestSubject } from "./testing.js";
 
 class DummyClass {}
@@ -60,6 +60,62 @@ TestSubject("eParentTo", () => {
       return {
         didFail: d.innerHTML != expected,
         description: `Didn't generate the expected children "${expected}", but got "${d.innerHTML}"`,
+      };
+    },
+  );
+});
+
+TestSubject("eText", () => {
+  TestCase(
+    "Datatype conversions",
+    [
+      ["Hello, World!", "Hello, World!"],
+      [12, "12"],
+      [false, "false"],
+      [null, ""],
+    ],
+    (input, expected) => {
+      const node = ePrepare(() => eText(input));
+      const output = node.textContent;
+      return {
+        didFail: output != expected,
+        description: `Expected content "${expected}", but got "${output}"`,
+      };
+    },
+  );
+
+  TestCase("Fails", [[{ one: 2 }], [[5, 3]], [new DummyClass()]], (input) => {
+    try {
+      ePrepare(() => eText(input));
+      return {
+        didFail: true,
+        description: `Didn't give an error for data: ${JSON.stringify(input)}`,
+      };
+    } catch (e) {
+      return {
+        didFail: !(e instanceof TypeError),
+        description: "Error not of type TypeError",
+      };
+    }
+  });
+
+  TestCase(
+    "Appends",
+    [
+      [
+        [document.createElement("div"), () => eText("Hello, World!")],
+        `<div>Hello, World!</div>`,
+      ],
+      [
+        [document.createElement("span"), () => [eText("One"), eText("Two")]],
+        `<span>OneTwo</span>`,
+      ],
+    ],
+    ([parent, body], expected) => {
+      eParentTo(parent, body);
+      return {
+        didFail: parent.outerHTML != expected,
+        description: `Outer HTML was "${parent.outerHTML}" instead of "${expected}"`,
       };
     },
   );

@@ -18,7 +18,13 @@
  */
 let internal_activeParent = document.body;
 
-// TODO: Document
+/**
+ * A utility function that restores the old_parent if the body call fails whilst still throwing the error
+ * @param {Node} old_parent The old parent to restore if an error is captured
+ * @param {eComponentDef_T} body The body function to try
+ * @param  {eComponentArg_T[]} body_arguments Arguments to the body function
+ * @returns {Node} The return value of the body function
+ */
 function internal_safeBodyCall(old_parent, body, ...body_arguments) {
   try {
     return body(...body_arguments);

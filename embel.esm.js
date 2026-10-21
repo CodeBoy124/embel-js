@@ -18,6 +18,16 @@
  */
 let internal_activeParent = document.body;
 
+// TODO: Document
+function internal_safeBodyCall(old_parent, body, ...body_arguments) {
+  try {
+    return body(...body_arguments);
+  } catch (e) {
+    internal_activeParent = old_parent;
+    throw e;
+  }
+}
+
 /**
  * The internal function responsible for creating all elements (so also parsing arguments and parenting to a parent)
  * @ignore
@@ -46,7 +56,7 @@ function internal_componentGeneric(kind, ...args) {
     } else if (typeof arg == "function") {
       const old_parent = internal_activeParent;
       internal_activeParent = new_element;
-      arg(internal_activeParent);
+      internal_safeBodyCall(old_parent, arg, internal_activeParent);
       internal_activeParent = old_parent;
     } else if (typeof arg == "object" && !Array.isArray(arg)) {
       for (let field in arg) {
@@ -93,7 +103,7 @@ export function eParentTo(new_parent, body = () => {}) {
 
   const old_parent = internal_activeParent;
   internal_activeParent = new_parent;
-  body(internal_activeParent);
+  internal_safeBodyCall(old_parent, body, internal_activeParent);
   internal_activeParent = old_parent;
 }
 
@@ -333,6 +343,7 @@ export const e = {
  * Creates a text node
  * @param {string} txt The text to put inside it
  * @returns {Text} The created node
+ * @throws {TypeError} if the txt is an object of any kind
  *
  * @example
  * let count_node = null;
@@ -344,6 +355,13 @@ export const e = {
  * })
  */
 export function eText(txt) {
+  if (txt == null) {
+    txt = "";
+  }
+  if (typeof txt == "object") {
+    throw new TypeError("Invalid txt argument", { cause: txt });
+  }
+
   let new_node = document.createTextNode(txt);
   internal_activeParent.appendChild(new_node);
   return new_node;
@@ -435,7 +453,7 @@ export function ePrepare(body) {
   const frag = document.createDocumentFragment();
   const old_parent = internal_activeParent;
   internal_activeParent = frag;
-  body(internal_activeParent);
+  internal_safeBodyCall(old_parent, body, internal_activeParent);
   internal_activeParent = old_parent;
   return frag;
 }

@@ -1,4 +1,4 @@
-import { eParentTo, e, eText, ePrepare } from "../embel.esm.js";
+import { eParentTo, e, eText, ePrepare, eWebcomponent } from "../embel.esm.js";
 import { TestCase, TestSubject } from "./testing.js";
 
 class DummyClass {}
@@ -117,6 +117,83 @@ TestSubject("eText", () => {
         didFail: parent.outerHTML != expected,
         description: `Outer HTML was "${parent.outerHTML}" instead of "${expected}"`,
       };
+    },
+  );
+});
+
+TestSubject("eWebComponent", () => {
+  TestCase(
+    "Kind",
+    [
+      ["x-tag", "X-TAG"],
+      ["someValue", "SOMEVALUE"],
+    ],
+    (input, expected) => {
+      let didFail = true;
+      let description = "Simply failed";
+
+      ePrepare(() => {
+        const tag = eWebcomponent(input);
+        const output = tag.tagName;
+
+        didFail = output != expected;
+        description = `Got "${output}", but expected "${expected}"`;
+      });
+
+      return { didFail, description };
+    },
+  );
+
+  TestCase(
+    "Children",
+    [
+      [
+        "x-form",
+        () => [
+          e.Input({ type: "text", value: "Hello" }),
+          e.Input({ type: "password" }),
+        ],
+        '<x-form><input type="text" value="Hello"><input type="password"></x-form>',
+      ],
+    ],
+    (component_name, body, expected) => {
+      let didFail = true;
+      let description = "Simply failed";
+
+      ePrepare(() => {
+        const tag = eWebcomponent(component_name, body);
+        const output = tag.outerHTML;
+
+        didFail = expected != output;
+        description = `Got "${output}", but expected "${expected}"`;
+      });
+
+      return { didFail, description };
+    },
+  );
+
+  TestCase(
+    "Appending",
+    [
+      [() => e.Div(), `<div><x-custom>Hello</x-custom></div>`],
+      [() => e.A({ href: "#" }), `<a href="#"><x-custom>Hello</x-custom></a>`],
+    ],
+    (parent, expected) => {
+      let didFail = true;
+      let description = "Simply failed";
+
+      ePrepare(() => {
+        const parent_el = parent();
+        eParentTo(parent_el, () => {
+          eWebcomponent("x-custom", "Hello");
+        });
+        const output = parent_el.outerHTML;
+
+        didFail = output != expected;
+        description = `Expected "${expected}", but got "${output}"`;
+      });
+
+      return { didFail, description };
     },
   );
 });

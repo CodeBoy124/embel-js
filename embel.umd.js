@@ -3,27 +3,43 @@ const { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment } =
     /**
      * Matches possible values you can insert into builtin Embel components.
      * The argument system is designed to be flexible, so you can work however you like (even putting the children before the attributes)
-     * @template {HTMLElement} T
-     * @typedef {(null|string|number|HTMLElement|(parent: T) => void|{[field: string]: string|function})} eComponentArg_T
+     * @template {Node} T
+     * @typedef {(null|string|number|Node|(parent: T) => void|{[field: string]: string|function})} eComponentArg_T
      */
 
     /**
      * The standard definition of builtin Embel HTML tags
-     * @template {HTMLElement} T
+     * @template {Node} T
      * @typedef {(...args: eComponentArg_T<T>[]) => T} eComponentDef_T
      */
 
     /**
      * The parent that is currently used to parent new elements to
      * @ignore
-     * @type {HTMLElement}
+     * @type {Node}
      */
     let internal_activeParent = document.body;
 
     /**
+     * A utility function that restores the old_parent if the body call fails whilst still throwing the error
+     * @param {Node} old_parent The old parent to restore if an error is captured
+     * @param {eComponentDef_T} body The body function to try
+     * @param  {eComponentArg_T[]} body_arguments Arguments to the body function
+     * @returns {Node} The return value of the body function
+     */
+    function internal_safeBodyCall(old_parent, body, ...body_arguments) {
+      try {
+        return body(...body_arguments);
+      } catch (e) {
+        internal_activeParent = old_parent;
+        throw e;
+      }
+    }
+
+    /**
      * The internal function responsible for creating all elements (so also parsing arguments and parenting to a parent)
      * @ignore
-     * @template {HTMLElement} T
+     * @template {Node} T
      * @param {string} kind What html tag to use for the element
      * @param {eComponentArg_T<T>[]} args The attributes, children, etc. of the new element
      * @returns {T} The new element
@@ -43,12 +59,12 @@ const { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment } =
       for (let arg of args) {
         if (typeof arg == "string" || typeof arg == "number") {
           new_element.appendChild(eText(arg));
-        } else if (arg instanceof HTMLElement || arg instanceof Node) {
+        } else if (arg instanceof Node || arg instanceof Node) {
           new_element.appendChild(arg);
         } else if (typeof arg == "function") {
           const old_parent = internal_activeParent;
           internal_activeParent = new_element;
-          arg(internal_activeParent);
+          internal_safeBodyCall(old_parent, arg, internal_activeParent);
           internal_activeParent = old_parent;
         } else if (typeof arg == "object" && !Array.isArray(arg)) {
           for (let field in arg) {
@@ -74,10 +90,10 @@ const { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment } =
 
     /**
      * Change the parent (where things a parented to) to something else temporarely
-     * @template {HTMLElement} T
+     * @template {Node} T
      * @param {T} new_parent The new temporary parent
      * @param {(parent: T) => void} body The content it has inside it
-     * @throws {TypeError} if the new_parent isn't an HTMLElement instance
+     * @throws {TypeError} if the new_parent isn't an Node instance
      * @throws {TypeError} if the body isn't a valid function
      *
      * @example
@@ -88,9 +104,9 @@ const { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment } =
      * }
      */
     function eParentTo(new_parent, body = () => {}) {
-      if (!(new_parent instanceof HTMLElement))
+      if (!(new_parent instanceof Node))
         throw new TypeError(
-          "Cannot parent to a parent of any type apart from HTMLElement",
+          "Cannot parent to a parent of any type apart from Node",
           { cause: new_parent },
         );
       if (typeof body != "function")
@@ -100,7 +116,7 @@ const { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment } =
 
       const old_parent = internal_activeParent;
       internal_activeParent = new_parent;
-      body(internal_activeParent);
+      internal_safeBodyCall(old_parent, body, internal_activeParent);
       internal_activeParent = old_parent;
     }
 
@@ -341,6 +357,7 @@ const { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment } =
      * Creates a text node
      * @param {string} txt The text to put inside it
      * @returns {Text} The created node
+     * @throws {TypeError} if the txt is an object of any kind
      *
      * @example
      * let count_node = null;
@@ -352,6 +369,13 @@ const { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment } =
      * })
      */
     function eText(txt) {
+      if (txt == null) {
+        txt = "";
+      }
+      if (typeof txt == "object") {
+        throw new TypeError("Invalid txt argument", { cause: txt });
+      }
+
       let new_node = document.createTextNode(txt);
       internal_activeParent.appendChild(new_node);
       return new_node;
@@ -443,7 +467,7 @@ const { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment } =
       const frag = document.createDocumentFragment();
       const old_parent = internal_activeParent;
       internal_activeParent = frag;
-      body(internal_activeParent);
+      internal_safeBodyCall(old_parent, body, internal_activeParent);
       internal_activeParent = old_parent;
       return frag;
     }
@@ -451,13 +475,12 @@ const { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment } =
     /**
      * A function that creates a fragment and appends it to the parent. So far I don't know any reason this would be used, but if there is a usecase, it's here
      * @param {(parent: DocumentFragment) => void} body The function for generating the children
-     * @returns {DocumentFragment} A fragment containing the children
+     * @returns {void}
      * @throws {TypeError} if the body isn't a function
      */
     function eFragment(body) {
       const frag = ePrepare(body);
       internal_activeParent.appendChild(frag);
-      return frag;
     }
 
     return { eParentTo, e, eText, eWebcomponent, eCss, ePrepare, eFragment };
